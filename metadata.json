@@ -1,0 +1,6 @@
+{
+  "name": "udinit",
+  "description": "سامانه مدیریت ارتباط با مشتری، وضعیت مالی و بدهی‌ها، پیگیری پرداخت با تاریخ شمسی خودکار، بایگانی تسویه‌ها و سند پرداخت",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
