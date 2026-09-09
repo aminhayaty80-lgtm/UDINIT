@@ -29,6 +29,28 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
+  <!-- TOP MANAGER BANNER (نمایان در حالت مدیر) -->
+  <div id="manager-banner" class="hidden bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 text-white px-4 py-2.5 text-xs border-b border-purple-800 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2 text-center sm:text-right">
+        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-500 text-white font-black text-xs shadow">M</span>
+        <div>
+          <span class="font-extrabold text-purple-200">پنل اختصاصی مدیریت ارشد (Manager Portal):</span>
+          <span class="text-purple-300 text-[11px] block sm:inline sm:mr-1">نظارت بر عملکرد، سوابق و ارجاع تسک‌های روزانه به کارشناس</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openAddTaskModal()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg shadow-sm transition text-xs flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          + تعریف تسک روزانه جدید
+        </button>
+        <button onclick="exitManagerMode()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-purple-200 hover:text-white font-semibold rounded-lg border border-purple-700 transition text-xs">
+          خروج از حالت مدیر
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOP NAVBAR -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,27 +62,34 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="font-extrabold text-xl text-slate-900 tracking-tight">udinit</span>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">نسخه وب و گیت‌هاب</span>
+              <span id="role-badge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">نمای کارشناس</span>
             </div>
-            <p class="text-xs text-slate-500 hidden sm:block">مدیریت مشتریان، تهاتر، مطالبات مالی، سوابق و اسناد تسویه</p>
+            <p class="text-xs text-slate-500 hidden sm:block">مدیریت مشتریان، تهاتر، مطالبات مالی، سوابق، تسویه‌ها و تسک‌های روزانه</p>
           </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="flex items-center gap-2 sm:gap-3">
-          <button onclick="openAddCustomerModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-sm transition">
+        <div class="flex items-center gap-1.5 sm:gap-2.5">
+          <!-- دکمه اختصاصی دریافت لینک مدیر -->
+          <button onclick="openManagerLinkModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white text-xs sm:text-sm font-bold rounded-lg shadow-sm shadow-purple-200 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            <span class="hidden sm:inline">لینک مدیر 👔</span>
+            <span class="sm:hidden">مدیر</span>
+          </button>
+
+          <button onclick="openAddCustomerModal()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-sm transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span class="hidden sm:inline">افزودن مشتری</span>
             <span class="sm:hidden">مشتری</span>
           </button>
-          <button onclick="openAddBarterServiceModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs sm:text-sm font-semibold rounded-lg transition">
+          <button onclick="openAddBarterServiceModal()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs sm:text-sm font-semibold rounded-lg transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
             <span class="hidden sm:inline">کسر خدمت تهاتر</span>
             <span class="sm:hidden">تهاتر</span>
           </button>
-          <button onclick="openAddDebtModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs sm:text-sm font-semibold rounded-lg transition">
+          <button onclick="openAddDebtModal()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs sm:text-sm font-semibold rounded-lg transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m-3-28h6"/></svg>
-            <span class="hidden sm:inline">ثبت بدهی نقدی</span>
+            <span class="hidden sm:inline">ثبت بدهی</span>
             <span class="sm:hidden">بدهی</span>
           </button>
           <button onclick="exportData()" title="پشتیبان‌گیری از داده‌ها" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition border border-slate-200">
@@ -78,35 +107,42 @@
           <span id="badge-customers-count" class="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
         </button>
 
-        <!-- Tab 2: Barter (تهاتر) NEW -->
+        <!-- Tab 2: Barter (تهاتر) -->
         <button onclick="switchTab('barter')" id="tab-btn-barter" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
           مدیریت تهاتر
           <span id="badge-barter-count" class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
         </button>
 
-        <!-- Tab 3: Financial Debts -->
+        <!-- Tab 3: Daily Tasks (تسک‌های روزانه مدیر و کارشناس) NEW -->
+        <button onclick="switchTab('tasks')" id="tab-btn-tasks" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          تسک‌های روزانه
+          <span id="badge-tasks-count" class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
+        </button>
+
+        <!-- Tab 4: Financial Debts -->
         <button onclick="switchTab('financial')" id="tab-btn-financial" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
           وضعیت مالی و بدهی‌ها
           <span id="badge-debt-amount" class="bg-rose-100 text-rose-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
         </button>
 
-        <!-- Tab 4: Settlement Archive -->
+        <!-- Tab 5: Settlement Archive -->
         <button onclick="switchTab('archive')" id="tab-btn-archive" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           بایگانی تسویه‌ها
           <span id="badge-settled-count" class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
         </button>
 
-        <!-- Tab 5: Follow-ups & Stale Alerts -->
+        <!-- Tab 6: Follow-ups & Stale Alerts -->
         <button onclick="switchTab('followups')" id="tab-btn-followups" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           پیگیری‌ها و هشدار راکد
           <span id="badge-stale-count" class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
         </button>
 
-        <!-- Tab 6: Sales Coach & Funnel -->
+        <!-- Tab 7: Sales Coach & Funnel -->
         <button onclick="switchTab('coach')" id="tab-btn-coach" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           کوچ فروش و تحلیل قیف
@@ -310,6 +346,80 @@
             قبل از هر تماس با مشتری، نگاهی به تب «سوابق» بیندازید تا دقیقاً بدانید آخرین بار مشتری چه نکاتی مطرح کرده و در چه مرحله‌ای متوقف شده بودید.
           </p>
         </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: DAILY TASKS (تسک‌های روزانه) ==================== -->
+    <section id="pane-tasks" class="hidden space-y-6">
+      <!-- Tasks Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-5 rounded-2xl shadow-md">
+          <p class="text-xs text-purple-100 font-semibold mb-1">کل تسک‌های ثبت‌شده</p>
+          <h3 id="stat-tasks-total" class="text-2xl font-black">۰</h3>
+          <p class="text-xs text-purple-200 mt-2">مجموع وظایف ارجاع‌شده توسط مدیریت</p>
+        </div>
+        <div class="bg-gradient-to-br from-amber-500 to-rose-600 text-white p-5 rounded-2xl shadow-md">
+          <p class="text-xs text-amber-100 font-semibold mb-1">تسک‌های باز و در دست اقدام</p>
+          <h3 id="stat-tasks-active" class="text-2xl font-black">۰</h3>
+          <p class="text-xs text-amber-100 mt-2">وظایف نیازمند پیگیری و اقدام سریع</p>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-5 rounded-2xl shadow-md">
+          <p class="text-xs text-emerald-100 font-semibold mb-1">تسک‌های انجام‌شده و تاییدشده</p>
+          <h3 id="stat-tasks-done" class="text-2xl font-black">۰</h3>
+          <p class="text-xs text-emerald-200 mt-2">وظایف با گزارش کار تکمیل‌شده</p>
+        </div>
+      </div>
+
+      <!-- Actions Bar -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white p-4 rounded-xl border border-slate-200 gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+            <h3 class="font-extrabold text-base text-slate-800">میز کار وظایف و دستورات روزانه مدیر</h3>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">مدیر می‌تواند از طریق لینک اختصاصی خود برای کارشناس تسک بنویسد؛ کارشناس در اینجا وضعیت را تغییر داده و گزارش ارسال می‌کند.</p>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="openManagerLinkModal()" class="flex-1 sm:flex-none px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs sm:text-sm font-bold rounded-lg transition flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            لینک دسترسی مدیر
+          </button>
+          <button onclick="openAddTaskModal()" class="flex-1 sm:flex-none px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow-sm transition flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            + ثبت تسک جدید
+          </button>
+        </div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
+        <div class="relative w-full md:w-80">
+          <input type="text" id="task-search-input" oninput="renderTasks()" placeholder="جستجو در تسک‌ها، مشتری یا دستور مدیر..." class="w-full pl-4 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white" />
+          <svg class="w-4 h-4 text-slate-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
+          <button onclick="filterTaskStatus('all')" class="filter-task-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white" data-task-status="all">همه</button>
+          <button onclick="filterTaskStatus('PENDING')" class="filter-task-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" data-task-status="PENDING">در انتظار اقدام</button>
+          <button onclick="filterTaskStatus('IN_PROGRESS')" class="filter-task-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" data-task-status="IN_PROGRESS">در حال انجام</button>
+          <button onclick="filterTaskStatus('DONE')" class="filter-task-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" data-task-status="DONE">انجام‌شده ✓</button>
+          
+          <span class="text-slate-300">|</span>
+          
+          <select id="task-priority-filter" onchange="filterTaskPriority(this.value)" class="text-xs bg-slate-100 text-slate-700 border-0 rounded-lg px-2.5 py-1.5 font-semibold focus:ring-2 focus:ring-indigo-500">
+            <option value="all">همه اولویت‌ها</option>
+            <option value="CRITICAL">🔴 فوری و حیاتی</option>
+            <option value="HIGH">🟡 اولویت بالا</option>
+            <option value="NORMAL">🔵 عادی</option>
+            <option value="REMINDER">🟣 یادآوری</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tasks Grid -->
+      <div id="tasks-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      <div id="tasks-empty" class="hidden text-center py-16 bg-white rounded-xl border border-dashed border-slate-300">
+        <p class="text-slate-500 font-medium">هیچ تسکی مطابق فیلتر یافت نشد.</p>
+        <button onclick="openAddTaskModal()" class="mt-3 px-4 py-2 bg-indigo-600 text-white text-xs sm:text-sm font-semibold rounded-lg">ثبت اولین تسک روزانه</button>
       </div>
     </section>
 
@@ -637,6 +747,175 @@
     </div>
   </div>
 
+  <!-- 8. Manager Dedicated Access Link Modal (لینک اختصاصی مدیر) -->
+  <div id="modal-manager-link" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+      <div class="p-5 border-b border-purple-100 bg-gradient-to-r from-purple-50 to-indigo-50 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-lg shadow-md shadow-purple-200">
+            👔
+          </div>
+          <div>
+            <h3 class="font-extrabold text-slate-900 text-base">لینک اختصاصی دسترسی و نظارت مدیر</h3>
+            <p class="text-xs text-purple-700 font-medium">مشاهده عملکرد کارشناس و ارجاع تسک‌های روزانه</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-manager-link')" class="text-slate-400 hover:text-slate-600 p-1">✕</button>
+      </div>
+
+      <div class="p-5 space-y-4 text-xs">
+        <div class="bg-purple-50/70 border border-purple-200 rounded-xl p-3.5 space-y-2 text-purple-950">
+          <p class="font-bold flex items-center gap-1.5 text-sm text-purple-900">
+            <span>راهنمای کاربری لینک مدیر:</span>
+          </p>
+          <ul class="space-y-1.5 list-disc list-inside text-purple-800 leading-relaxed pr-1">
+            <li>این لینک را کپی کرده و برای مدیر خود (در تلگرام، واتساپ یا پیامک) بفرستید.</li>
+            <li>مدیر با باز کردن این لینک، مستقیماً وارد <strong class="text-purple-950">پنل نظارت مدیریت</strong> می‌شود.</li>
+            <li>مدیر می‌تواند به تمام پرونده‌ها، مانده تهاتر، فاکتورها، تسویه‌ها و سوابق دسترسی داشته باشد.</li>
+            <li>همچنین مدیر در پنل خود می‌تواند <strong class="text-purple-950">تسک‌های روزانه</strong> برای شما تعیین کند که در تب «تسک‌های روزانه» شما قرار می‌گیرد.</li>
+          </ul>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">آدرس مستقیم دسترسی مدیر (اختصاصی):</label>
+          <div class="flex gap-2">
+            <input type="text" id="manager-url-input" readonly class="w-full px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-800 font-mono select-all focus:outline-none focus:ring-2 focus:ring-purple-500" dir="ltr" />
+            <button onclick="copyManagerLink()" class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-sm transition shrink-0 flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+              <span>کپی لینک</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <span class="text-slate-500 font-medium">ارسال مستقیم در:</span>
+          <button onclick="shareManagerLink('telegram')" class="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-lg font-bold flex items-center gap-1 transition">
+            تلگرام
+          </button>
+          <button onclick="shareManagerLink('whatsapp')" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg font-bold flex items-center gap-1 transition">
+            واتساپ
+          </button>
+        </div>
+
+        <div class="border-t border-slate-200 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-xl">
+          <div>
+            <p class="font-bold text-slate-800">تست و ورود آزمایشی به پنل مدیر:</p>
+            <p class="text-[11px] text-slate-500">می‌توانید هم‌اکنون سامانه را از دید مدیر مشاهده کنید.</p>
+          </div>
+          <button onclick="toggleManagerModeDirectly()" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition text-xs shadow">
+            تغییر نما به مدیر
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-100 flex justify-end">
+        <button onclick="closeModal('modal-manager-link')" class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs">
+          بستن
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Create/Edit Daily Task Modal (ثبت تسک روزانه مدیر) -->
+  <div id="modal-task" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden max-h-[92vh] flex flex-col">
+      <div class="p-5 border-b border-purple-100 bg-purple-50/70 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">
+            ✓
+          </div>
+          <div>
+            <h3 id="modal-task-title" class="font-bold text-purple-950 text-base">تعریف تسک روزانه جدید</h3>
+            <p class="text-xs text-purple-700">ارجاع وظیفه یا دستور پیگیری به کارشناس</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-task')" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+
+      <form id="task-form" onsubmit="handleSaveTask(event)" class="p-5 space-y-4 overflow-y-auto flex-1">
+        <input type="hidden" id="task-id" />
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">عنوان تسک یا موضوع پیگیری *</label>
+          <input type="text" id="task-title-input" required placeholder="مثال: پیگیری تایید سناریو با هتل پارسیس..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none font-medium" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">مشتری مرتبط (اختیاری)</label>
+            <select id="task-customer-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">سطح اولویت *</label>
+            <select id="task-priority-select" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none font-bold">
+              <option value="CRITICAL">🔴 فوری و حیاتی</option>
+              <option value="HIGH">🟡 اولویت بالا</option>
+              <option value="NORMAL" selected>🔵 اولویت عادی</option>
+              <option value="REMINDER">🟣 یادآوری</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">مهلت انجام (تاریخ یا بازه) *</label>
+            <input type="text" id="task-due-date-input" required placeholder="مثال: امروز، فردا، ۱۴۰۵/۰۵/۰۵" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">ارجاع دهنده (صادرکننده دستور) *</label>
+            <input type="text" id="task-assigner-input" required placeholder="مثال: مدیریت ارشد فروش" value="مدیریت ارشد" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">دستورالعمل، جزئیات و توضیحات مدیر *</label>
+          <textarea id="task-desc-input" required rows="3" placeholder="چه مواردی باید پیگیری شود و نتیجه در چه قالبی اعلام گردد؟..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none leading-relaxed"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-task')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">انصراف</button>
+          <button type="submit" class="px-5 py-2 text-sm font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-sm">ثبت و ارجاع تسک</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 10. Staff Task Feedback & Report Modal (گزارش اقدام کارشناس به مدیر) -->
+  <div id="modal-task-report" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+      <div class="p-5 border-b border-indigo-100 bg-indigo-50/70 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-indigo-950 text-base">ثبت گزارش کار و پاسخ به مدیر</h3>
+          <p id="report-task-title-preview" class="text-xs text-indigo-700 font-medium truncate mt-0.5"></p>
+        </div>
+        <button onclick="closeModal('modal-task-report')" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+
+      <form id="task-report-form" onsubmit="handleSaveTaskReport(event)" class="p-5 space-y-4">
+        <input type="hidden" id="report-task-id" />
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">شرح نتیجه اقدام و گزارش کارشناس *</label>
+          <textarea id="report-text-input" required rows="4" placeholder="مثال: با مخاطب تماس گرفته شد؛ پیشنهاد ارسال شد و قرار بر این شد که..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none leading-relaxed"></textarea>
+        </div>
+
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="report-mark-done-check" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500" checked />
+            <span class="text-xs font-bold text-slate-800">تغییر وضعیت تسک به «انجام‌شده و تکمیل✓»</span>
+          </label>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-task-report')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">انصراف</button>
+          <button type="submit" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm">ثبت و ارسال گزارش</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="toast" class="fixed bottom-5 left-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl shadow-xl border border-slate-700"></div>
 
   <!-- JAVASCRIPT LOGIC -->
@@ -646,13 +925,19 @@
     const STORAGE_KEY_CALL_LOGS = 'udinit_web_call_logs_v2';
     const STORAGE_KEY_BARTER_SERVICES = 'udinit_web_barter_services_v2';
     const STORAGE_KEY_NOTES = 'udinit_web_history_notes_v2';
+    const STORAGE_KEY_TASKS = 'udinit_web_tasks_v2';
+    const STORAGE_KEY_ACTIVE_ROLE = 'udinit_active_role_v2';
 
     let customers = [];
     let debts = [];
     let callLogs = [];
     let barterServices = [];
     let historyNotes = [];
+    let tasks = [];
+    let isManagerMode = false;
     let selectedStatusFilter = 'all';
+    let selectedTaskFilter = 'all';
+    let selectedTaskPriorityFilter = 'all';
     let currentReceiptBase64 = null;
     let currentViewingCustomerId = null;
 
@@ -669,13 +954,14 @@
       return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "٬") + ' تومان';
     }
 
-    // Initialize Default Demo Data (شامل هتل پارسیس تهاتری درخواستی کاربر)
+    // Initialize Default Demo Data (شامل هتل پارسیس تهاتری و تسک‌های روزانه درخواستی)
     function initSampleDataIfEmpty() {
       const savedCust = localStorage.getItem(STORAGE_KEY_CUSTOMERS);
       const savedDebts = localStorage.getItem(STORAGE_KEY_DEBTS);
       const savedLogs = localStorage.getItem(STORAGE_KEY_CALL_LOGS);
       const savedServices = localStorage.getItem(STORAGE_KEY_BARTER_SERVICES);
       const savedNotes = localStorage.getItem(STORAGE_KEY_NOTES);
+      const savedTasks = localStorage.getItem(STORAGE_KEY_TASKS);
 
       if (savedCust) customers = JSON.parse(savedCust);
       else {
@@ -791,6 +1077,55 @@
         ];
         saveHistoryNotes();
       }
+
+      if (savedTasks) tasks = JSON.parse(savedTasks);
+      else {
+        tasks = [
+          {
+            id: 't_1',
+            title: 'پیگیری جلسه سناریوی تیزر تبلیغاتی دوم با هتل پارسیس',
+            customerId: 'c_parsis',
+            customerCompanyName: 'هتل پارسیس',
+            priority: 'CRITICAL',
+            dueDateStr: 'امروز',
+            assignedBy: 'مدیریت ارشد فروش',
+            createdAt: Date.now() - 3600000 * 4,
+            description: 'با توجه به کسر خدمت ۶۰ میلیونی از سقف تهاتر ۲ میلیاردی، سناریوی تیزر بخش VIP هتل نهایی شده است. با دفتر مدیر بازرگانی تماس گرفته و تاییدیه گرفته شود.',
+            status: 'IN_PROGRESS',
+            reportFeedback: 'با دفتر مدیریت هتل پارسیس صحبت شد؛ سناریو ارسال گردید و برای فردا ساعت ۱۱ جلسه نهایی تایید ست شد.',
+            reportDateStr: '۱۴۰۵/۰۵/۰۵'
+          },
+          {
+            id: 't_2',
+            title: 'پیگیری واریز و تسویه بدهی شرکت پتروپارس نوین',
+            customerId: 'c1',
+            customerCompanyName: 'شرکت پتروپارس نوین',
+            priority: 'HIGH',
+            dueDateStr: 'تا فردا عصر',
+            assignedBy: 'مدیریت مالی',
+            createdAt: Date.now() - 3600000 * 10,
+            description: 'بدهی ۱۰۸ میلیون تومانی مربوط به کمپین دیجیتال سررسید شده؛ لطفاً تصویر فیش واریز را دریافت و ثبت تسویه نمایید.',
+            status: 'PENDING',
+            reportFeedback: null,
+            reportDateStr: null
+          },
+          {
+            id: 't_3',
+            title: 'تماس با گروه صنعتی آذرخش جهت ارائه آفر تخفیف و خروج از راکد',
+            customerId: 'c2',
+            customerCompanyName: 'گروه صنعتی آذرخش',
+            priority: 'NORMAL',
+            dueDateStr: 'این هفته',
+            assignedBy: 'مدیریت ارشد فروش',
+            createdAt: Date.now() - 86400000 * 2,
+            description: 'مشتری در وضعیت راکد قرار گرفته؛ پیشنهاد تخفیف ۱۰ درصدی برای بستن قرارداد ۶ ماهه ارائه شود.',
+            status: 'DONE',
+            reportFeedback: 'جلسه تلفنی با خانم دکتر احمدی برگزار شد. از پیشنهاد استقبال کردند و قرارداد جدید ارسال شد.',
+            reportDateStr: '۱۴۰۵/۰۵/۰۴'
+          }
+        ];
+        saveTasks();
+      }
     }
 
     function saveCustomers() { localStorage.setItem(STORAGE_KEY_CUSTOMERS, JSON.stringify(customers)); }
@@ -798,6 +1133,16 @@
     function saveCallLogs() { localStorage.setItem(STORAGE_KEY_CALL_LOGS, JSON.stringify(callLogs)); }
     function saveBarterServices() { localStorage.setItem(STORAGE_KEY_BARTER_SERVICES, JSON.stringify(barterServices)); }
     function saveHistoryNotes() { localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(historyNotes)); }
+    function saveTasks() { 
+      localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+      try {
+        if (window.BroadcastChannel) {
+          const bc = new BroadcastChannel('udinit_sync_channel');
+          bc.postMessage({ type: 'TASKS_UPDATED', timestamp: Date.now() });
+          bc.close();
+        }
+      } catch (e) {}
+    }
 
     function showToast(msg) {
       const toast = document.getElementById('toast');
@@ -832,7 +1177,7 @@
 
     // NAVIGATION TABS SWITCH
     function switchTab(tabId) {
-      ['customers', 'barter', 'financial', 'archive', 'followups', 'coach'].forEach(t => {
+      ['customers', 'barter', 'tasks', 'financial', 'archive', 'followups', 'coach'].forEach(t => {
         const pane = document.getElementById('pane-' + t);
         const btn = document.getElementById('tab-btn-' + t);
         if (t === tabId) {
@@ -845,6 +1190,7 @@
       });
       if (tabId === 'customers') renderCustomers();
       if (tabId === 'barter') renderBarterScreen();
+      if (tabId === 'tasks') renderTasks();
       if (tabId === 'financial') renderDebts();
       if (tabId === 'archive') renderSettledArchive();
       if (tabId === 'followups') renderStaleCustomers();
@@ -857,6 +1203,18 @@
       
       const barterClients = customers.filter(c => c.dealType === 'BARTER');
       document.getElementById('badge-barter-count').textContent = barterClients.length;
+
+      // Tasks count
+      const activeTasks = tasks.filter(t => t.status !== 'DONE');
+      const doneTasks = tasks.filter(t => t.status === 'DONE');
+      const badgeTasks = document.getElementById('badge-tasks-count');
+      if (badgeTasks) badgeTasks.textContent = activeTasks.length;
+
+      if (document.getElementById('stat-tasks-total')) {
+        document.getElementById('stat-tasks-total').textContent = tasks.length;
+        document.getElementById('stat-tasks-active').textContent = activeTasks.length;
+        document.getElementById('stat-tasks-done').textContent = doneTasks.length;
+      }
 
       const activeDebts = debts.filter(d => !d.isSettled);
       document.getElementById('badge-debt-amount').textContent = activeDebts.length;
@@ -1726,27 +2084,459 @@
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
+    // ================== MANAGER ROLE & DEDICATED LINK ==================
+    function checkManagerMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const roleParam = urlParams.get('role') || urlParams.get('mode') || urlParams.get('view');
+      const storedRole = localStorage.getItem(STORAGE_KEY_ACTIVE_ROLE);
+
+      if (roleParam === 'manager' || storedRole === 'manager') {
+        isManagerMode = true;
+      } else {
+        isManagerMode = false;
+      }
+      applyManagerModeUI();
+    }
+
+    function applyManagerModeUI() {
+      const banner = document.getElementById('manager-banner');
+      const badge = document.getElementById('role-badge');
+      if (isManagerMode) {
+        if (banner) banner.classList.remove('hidden');
+        if (badge) {
+          badge.textContent = 'حالت: مدیریت ارشد 👔';
+          badge.className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300';
+        }
+      } else {
+        if (banner) banner.classList.add('hidden');
+        if (badge) {
+          badge.textContent = 'نمای کارشناس';
+          badge.className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200';
+        }
+      }
+    }
+
+    function exitManagerMode() {
+      isManagerMode = false;
+      localStorage.removeItem(STORAGE_KEY_ACTIVE_ROLE);
+      const url = new URL(window.location.href);
+      url.searchParams.delete('role');
+      url.searchParams.delete('mode');
+      url.searchParams.delete('view');
+      window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''));
+      applyManagerModeUI();
+      showToast('به نمای کارشناس بازگشتید');
+      renderTasks();
+    }
+
+    function toggleManagerModeDirectly() {
+      isManagerMode = true;
+      localStorage.setItem(STORAGE_KEY_ACTIVE_ROLE, 'manager');
+      applyManagerModeUI();
+      closeModal('modal-manager-link');
+      switchTab('tasks');
+      showToast('حالت مدیریت ارشد فعال شد 👔');
+      renderTasks();
+    }
+
+    function getManagerLink() {
+      const url = new URL(window.location.href);
+      url.searchParams.set('role', 'manager');
+      return url.toString();
+    }
+
+    function openManagerLinkModal() {
+      const link = getManagerLink();
+      document.getElementById('manager-url-input').value = link;
+      openModal('modal-manager-link');
+    }
+
+    function copyManagerLink() {
+      const input = document.getElementById('manager-url-input');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value).then(() => {
+        showToast('لینک اختصاصی مدیر کپی شد ✓');
+      }).catch(() => {
+        document.execCommand('copy');
+        showToast('لینک اختصاصی مدیر کپی شد ✓');
+      });
+    }
+
+    function shareManagerLink(platform) {
+      const link = getManagerLink();
+      const message = 'سلام، لینک دسترسی شما به سامانه مدیریت و نظارت udinit برای مشاهده عملکرد، تهاترها، بدهی‌ها و ثبت تسک‌های روزانه:\n' + link;
+      if (platform === 'telegram') {
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(message)}`, '_blank');
+      } else if (platform === 'whatsapp') {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+      }
+    }
+
+    // ================== DAILY TASKS MODULE ==================
+    function populateTaskCustomersSelect(selectedCustId = '') {
+      const select = document.getElementById('task-customer-select');
+      select.innerHTML = '<option value="">-- بدون مشتری خاص / عمومی --</option>' +
+        customers.map(c => `<option value="${c.id}" ${c.id === selectedCustId ? 'selected' : ''}>${c.companyName} (${c.dealType === 'BARTER' ? 'تهاتر' : 'نقدی'})</option>`).join('');
+    }
+
+    function openAddTaskModal(taskId = null) {
+      document.getElementById('task-form').reset();
+      document.getElementById('task-id').value = '';
+      populateTaskCustomersSelect();
+
+      if (taskId) {
+        const t = tasks.find(x => x.id === taskId);
+        if (t) {
+          document.getElementById('modal-task-title').textContent = 'ویرایش تسک روزانه';
+          document.getElementById('task-id').value = t.id;
+          document.getElementById('task-title-input').value = t.title;
+          populateTaskCustomersSelect(t.customerId || '');
+          document.getElementById('task-priority-select').value = t.priority || 'NORMAL';
+          document.getElementById('task-due-date-input').value = t.dueDateStr || '';
+          document.getElementById('task-assigner-input').value = t.assignedBy || (isManagerMode ? 'مدیریت ارشد' : 'مدیر فروش');
+          document.getElementById('task-desc-input').value = t.description || '';
+        }
+      } else {
+        document.getElementById('modal-task-title').textContent = 'تعریف تسک روزانه جدید';
+        document.getElementById('task-due-date-input').value = getTodayShamsi();
+        document.getElementById('task-assigner-input').value = isManagerMode ? 'مدیریت ارشد' : 'مدیر فروش';
+      }
+      openModal('modal-task');
+    }
+
+    function handleSaveTask(e) {
+      e.preventDefault();
+      const id = document.getElementById('task-id').value;
+      const title = document.getElementById('task-title-input').value.trim();
+      const custId = document.getElementById('task-customer-select').value;
+      const priority = document.getElementById('task-priority-select').value;
+      const dueDateStr = document.getElementById('task-due-date-input').value.trim();
+      const assignedBy = document.getElementById('task-assigner-input').value.trim();
+      const description = document.getElementById('task-desc-input').value.trim();
+
+      const matchedCust = customers.find(c => c.id === custId);
+      const customerCompanyName = matchedCust ? matchedCust.companyName : null;
+
+      if (id) {
+        // Edit existing task
+        const idx = tasks.findIndex(x => x.id === id);
+        if (idx !== -1) {
+          tasks[idx] = {
+            ...tasks[idx],
+            title,
+            customerId: custId || null,
+            customerCompanyName,
+            priority,
+            dueDateStr,
+            assignedBy,
+            description
+          };
+          showToast('تسک با موفقیت ویرایش شد');
+        }
+      } else {
+        // Create new task
+        const newTask = {
+          id: 't_' + Date.now(),
+          title,
+          customerId: custId || null,
+          customerCompanyName,
+          priority,
+          dueDateStr,
+          assignedBy,
+          createdAt: Date.now(),
+          description,
+          status: 'PENDING',
+          reportFeedback: null,
+          reportDateStr: null
+        };
+        tasks.unshift(newTask);
+        showToast('تسک جدید با موفقیت ثبت شد');
+      }
+
+      saveTasks();
+      closeModal('modal-task');
+      renderTasks();
+      updateBadges();
+    }
+
+    function filterTaskStatus(status) {
+      selectedTaskFilter = status;
+      document.querySelectorAll('.filter-task-btn').forEach(btn => {
+        if (btn.getAttribute('data-task-status') === status) {
+          btn.className = 'filter-task-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white';
+        } else {
+          btn.className = 'filter-task-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200';
+        }
+      });
+      renderTasks();
+    }
+
+    function filterTaskPriority(priority) {
+      selectedTaskPriorityFilter = priority;
+      renderTasks();
+    }
+
+    function toggleTaskStatus(taskId) {
+      const t = tasks.find(x => x.id === taskId);
+      if (!t) return;
+      if (t.status === 'PENDING') {
+        t.status = 'IN_PROGRESS';
+        showToast('وضعیت تسک به «در حال انجام» تغییر یافت');
+      } else if (t.status === 'IN_PROGRESS') {
+        t.status = 'DONE';
+        showToast('تسک با موفقیت تکمیل شد ✓');
+      } else {
+        t.status = 'PENDING';
+        showToast('تسک مجدداً فعال شد');
+      }
+      saveTasks();
+      renderTasks();
+      updateBadges();
+    }
+
+    function openTaskReportModal(taskId) {
+      const t = tasks.find(x => x.id === taskId);
+      if (!t) return;
+      document.getElementById('report-task-id').value = t.id;
+      document.getElementById('report-task-title-preview').textContent = `موضوع: ${t.title}`;
+      document.getElementById('report-text-input').value = t.reportFeedback || '';
+      document.getElementById('report-mark-done-check').checked = t.status !== 'DONE';
+      openModal('modal-task-report');
+    }
+
+    function handleSaveTaskReport(e) {
+      e.preventDefault();
+      const id = document.getElementById('report-task-id').value;
+      const text = document.getElementById('report-text-input').value.trim();
+      const markDone = document.getElementById('report-mark-done-check').checked;
+
+      const t = tasks.find(x => x.id === id);
+      if (t) {
+        t.reportFeedback = text;
+        t.reportDateStr = getTodayShamsi();
+        if (markDone) {
+          t.status = 'DONE';
+        }
+        saveTasks();
+        showToast('گزارش اقدام ثبت شد و برای مدیر ارسال گردید ✓');
+        closeModal('modal-task-report');
+        renderTasks();
+        updateBadges();
+      }
+    }
+
+    function deleteTask(taskId) {
+      if (confirm('آیا از حذف این تسک اطمینان دارید؟')) {
+        tasks = tasks.filter(t => t.id !== taskId);
+        saveTasks();
+        showToast('تسک حذف شد');
+        renderTasks();
+        updateBadges();
+      }
+    }
+
+    function renderTasks() {
+      const grid = document.getElementById('tasks-grid');
+      const empty = document.getElementById('tasks-empty');
+      const search = (document.getElementById('task-search-input')?.value || '').trim().toLowerCase();
+
+      let filtered = tasks;
+
+      // Status filter
+      if (selectedTaskFilter !== 'all') {
+        filtered = filtered.filter(t => t.status === selectedTaskFilter);
+      }
+
+      // Priority filter
+      if (selectedTaskPriorityFilter !== 'all') {
+        filtered = filtered.filter(t => t.priority === selectedTaskPriorityFilter);
+      }
+
+      // Search filter
+      if (search) {
+        filtered = filtered.filter(t => 
+          (t.title && t.title.toLowerCase().includes(search)) ||
+          (t.description && t.description.toLowerCase().includes(search)) ||
+          (t.customerCompanyName && t.customerCompanyName.toLowerCase().includes(search)) ||
+          (t.assignedBy && t.assignedBy.toLowerCase().includes(search))
+        );
+      }
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      grid.innerHTML = filtered.map(t => {
+        // Priority styling
+        let priorityBadge = '';
+        if (t.priority === 'CRITICAL') {
+          priorityBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-100 text-rose-700 border border-rose-200 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span>فوری و حیاتی</span>';
+        } else if (t.priority === 'HIGH') {
+          priorityBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">اولویت بالا</span>';
+        } else if (t.priority === 'REMINDER') {
+          priorityBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">یادآوری</span>';
+        } else {
+          priorityBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">عادی</span>';
+        }
+
+        // Status badge
+        let statusBadge = '';
+        let nextStatusBtnText = '';
+        if (t.status === 'DONE') {
+          statusBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">✓ انجام‌شده</span>';
+          nextStatusBtnText = 'بازگشت به جریان';
+        } else if (t.status === 'IN_PROGRESS') {
+          statusBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">در حال انجام ⏳</span>';
+          nextStatusBtnText = 'تکمیل شد ✓';
+        } else {
+          statusBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">در انتظار اقدام</span>';
+          nextStatusBtnText = 'شروع کار ▶';
+        }
+
+        // Customer Link
+        let customerBadge = '';
+        if (t.customerCompanyName && t.customerId) {
+          customerBadge = `
+            <button onclick="openHistoryModal('${t.customerId}')" title="مشاهده پرونده و سوابق مشتری" class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              ${t.customerCompanyName}
+            </button>
+          `;
+        }
+
+        // Feedback callout
+        let feedbackHtml = '';
+        if (t.reportFeedback) {
+          feedbackHtml = `
+            <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3 text-xs space-y-1">
+              <div class="flex items-center justify-between text-indigo-900 font-bold">
+                <span class="flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                  گزارش اقدام کارشناس به مدیر:
+                </span>
+                <span class="text-[10px] text-indigo-600 font-mono">${t.reportDateStr || ''}</span>
+              </div>
+              <p class="text-slate-700 leading-relaxed">${t.reportFeedback}</p>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="bg-white rounded-2xl border ${t.priority === 'CRITICAL' ? 'border-rose-300 shadow-rose-100' : 'border-slate-200'} p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <!-- Top Row: Badges & Due -->
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  ${priorityBadge}
+                  ${statusBadge}
+                </div>
+                <div class="text-[11px] text-slate-500 font-medium flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  مهلت: <strong class="text-slate-800">${t.dueDateStr}</strong>
+                </div>
+              </div>
+
+              <!-- Task Title -->
+              <div>
+                <h4 class="font-extrabold text-slate-900 text-sm sm:text-base leading-snug">${t.title}</h4>
+                <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500">
+                  <span>صادرکننده: <strong class="text-slate-700">${t.assignedBy || 'مدیریت'}</strong></span>
+                </div>
+              </div>
+
+              <!-- Instructions / Notes -->
+              <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-xs text-slate-700 leading-relaxed">
+                ${t.description}
+              </div>
+
+              <!-- Customer Link (if any) -->
+              ${customerBadge ? `<div class="pt-1">${customerBadge}</div>` : ''}
+
+              <!-- Staff Feedback (if any) -->
+              ${feedbackHtml}
+            </div>
+
+            <!-- Bottom Actions -->
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleTaskStatus('${t.id}')" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition border border-indigo-200">
+                  ${nextStatusBtnText}
+                </button>
+                <button onclick="openTaskReportModal('${t.id}')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  ثبت گزارش کار
+                </button>
+              </div>
+
+              <div class="flex items-center gap-1">
+                <button onclick="openAddTaskModal('${t.id}')" title="ویرایش تسک" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
+                <button onclick="deleteTask('${t.id}')" title="حذف تسک" class="p-1.5 text-rose-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Real-time synchronization between manager & employee tabs
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEY_TASKS) {
+        try {
+          tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+          renderTasks();
+          updateBadges();
+          showToast('لیست تسک‌های روزانه با تغییرات مدیر به‌روز شد 🔔');
+        } catch (err) {}
+      }
+    });
+
+    try {
+      if (window.BroadcastChannel) {
+        const bc = new BroadcastChannel('udinit_sync_channel');
+        bc.onmessage = (msg) => {
+          if (msg.data && msg.data.type === 'TASKS_UPDATED') {
+            try {
+              tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+              renderTasks();
+              updateBadges();
+            } catch (err) {}
+          }
+        };
+      }
+    } catch (e) {}
+
     function exportData() {
       const blob = new Blob([JSON.stringify({
         app: 'udinit',
-        version: '2.0.0',
+        version: '2.1.0',
         exportedAt: new Date().toISOString(),
         customers,
         debts,
         callLogs,
         barterServices,
-        historyNotes
+        historyNotes,
+        tasks
       }, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = `udinit-backup-${Date.now()}.json`;
       a.click();
-      showToast('فایل پشتیبان کامل دانلود شد');
+      showToast('فایل پشتیبان کامل با تسک‌ها دانلود شد');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      checkManagerMode();
       initSampleDataIfEmpty();
       renderCustomers();
+      renderTasks();
       updateBadges();
     });
   </script>
