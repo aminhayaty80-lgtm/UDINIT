@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>udinit | سامانه مدیریت ارتباط با مشتری، بدهی و تسویه‌ها</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Vazirmatn', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Vazirmatn', sans-serif;
+    }
+    /* Hide scrollbars nicely */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-xl shadow-md shadow-indigo-200">
+            u
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-xl text-slate-900 tracking-tight">udinit</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">نسخه وب</span>
+            </div>
+            <p class="text-xs text-slate-500 hidden sm:block">مدیریت ارتباط با مشتری، پیگیری مطالبات و اسناد تسویه</p>
+          </div>
+        </div>
+
+        <!-- Quick Summary Header & Actions -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="openAddCustomerModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-sm transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span class="hidden sm:inline">افزودن مشتری</span>
+            <span class="sm:hidden">مشتری</span>
+          </button>
+          <button onclick="openAddDebtModal()" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs sm:text-sm font-semibold rounded-lg transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m-3-28h6"/></svg>
+            <span class="hidden sm:inline">ثبت بدهی جدید</span>
+            <span class="sm:hidden">بدهی</span>
+          </button>
+          <!-- Backup button -->
+          <div class="relative">
+            <button onclick="exportData()" title="پشتیبان‌گیری از داده‌ها" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition border border-slate-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAVIGATION TABS -->
+      <nav class="flex space-x-1 space-x-reverse border-t border-slate-100 overflow-x-auto no-scrollbar py-1">
+        <button onclick="switchTab('customers')" id="tab-btn-customers" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          مشتریان
+          <span id="badge-customers-count" class="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
+        </button>
+
+        <button onclick="switchTab('financial')" id="tab-btn-financial" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          وضعیت مالی و بدهی‌ها
+          <span id="badge-debt-amount" class="bg-rose-100 text-rose-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
+        </button>
+
+        <button onclick="switchTab('archive')" id="tab-btn-archive" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          بایگانی تسویه‌ها
+          <span id="badge-settled-count" class="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
+        </button>
+
+        <button onclick="switchTab('followups')" id="tab-btn-followups" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          پیگیری‌ها و هشدار راکد
+          <span id="badge-stale-count" class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-bold">۰</span>
+        </button>
+
+        <button onclick="switchTab('coach')" id="tab-btn-coach" class="tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          کوچ فروش و تحلیل قیف
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== TAB 1: CUSTOMERS ==================== -->
+    <section id="pane-customers" class="space-y-5">
+      <!-- Search & Filters -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
+        <div class="relative w-full md:w-96">
+          <input type="text" id="customer-search-input" oninput="renderCustomers()" placeholder="جستجو بر اساس نام شرکت، شخص یا حوزه..." class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white" />
+          <svg class="w-5 h-5 text-slate-400 absolute right-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto no-scrollbar">
+          <button onclick="filterCustomerStatus('all')" class="filter-status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white" data-status="all">همه</button>
+          <button onclick="filterCustomerStatus('NEW')" class="filter-status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" data-status="NEW">سرنخ جدید</button>
+          <button onclick="filterCustomerStatus('IN_NEGOTIATION')" class="filter-status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" data-status="IN_NEGOTIATION">در حال مذاکره</button>
+          <button onclick="filterCustomerStatus('ACTIVE_DEAL')" class="filter-status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" data-status="ACTIVE_DEAL">مشتری قطعی</button>
+          <button onclick="filterCustomerStatus('LOST')" class="filter-status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" data-status="LOST">انصراف / راکد</button>
+        </div>
+      </div>
+
+      <!-- Customers Grid -->
+      <div id="customers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+      <div id="customers-empty" class="hidden text-center py-16 bg-white rounded-xl border border-dashed border-slate-300">
+        <p class="text-slate-500 font-medium">هیچ مشتری‌ای مطابق جستجو یافت نشد.</p>
+        <button onclick="openAddCustomerModal()" class="mt-3 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg">ثبت اولین مشتری</button>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: FINANCIAL & DEBTS ==================== -->
+    <section id="pane-financial" class="hidden space-y-6">
+      <!-- Financial Overview Banner -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white p-5 rounded-2xl shadow-md">
+          <p class="text-xs text-indigo-100 font-semibold mb-1">جمع کل فاکتورها و بدهی‌های ثبت‌شده</p>
+          <h3 id="stat-total-debt" class="text-2xl font-black">۰ تومان</h3>
+          <p class="text-xs text-indigo-200 mt-2">مجموع تعهدات مالی تمام مشتریان</p>
+        </div>
+        <div class="bg-gradient-to-br from-rose-500 to-rose-700 text-white p-5 rounded-2xl shadow-md">
+          <p class="text-xs text-rose-100 font-semibold mb-1">مانده بدهی جاری (در انتظار پرداخت)</p>
+          <h3 id="stat-active-debt" class="text-2xl font-black">۰ تومان</h3>
+          <p class="text-xs text-rose-200 mt-2">مطالبات معوق و قابل پیگیری</p>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white p-5 rounded-2xl shadow-md">
+          <p class="text-xs text-emerald-100 font-semibold mb-1">کل وصولی و تسویه‌شده</p>
+          <h3 id="stat-settled-debt" class="text-2xl font-black">۰ تومان</h3>
+          <p class="text-xs text-emerald-200 mt-2">انتقال‌یافته به بایگانی تسویه‌ها</p>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200">
+        <div>
+          <h3 class="font-extrabold text-base text-slate-800">بدهی‌های جاری در انتظار تسویه</h3>
+          <p class="text-xs text-slate-500 mt-0.5">پس از دریافت وجه یا فیش بانکی، روی «تسویه و بارگذاری سند» کلیک نمایید.</p>
+        </div>
+        <button onclick="openAddDebtModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-sm">
+          + ثبت بدهی جدید
+        </button>
+      </div>
+
+      <!-- Active Debts List -->
+      <div id="active-debts-list" class="space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+      <div id="debts-empty" class="hidden text-center py-16 bg-white rounded-xl border border-dashed border-slate-300">
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h4 class="font-bold text-slate-800">هیچ بدهی معوق یا پرداخت‌نشده‌ای وجود ندارد</h4>
+        <p class="text-xs text-slate-500 mt-1">تمام مطالبات وصول شده یا هنوز بدهی جدیدی ثبت نشده است.</p>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: SETTLEMENT ARCHIVE ==================== -->
+    <section id="pane-archive" class="hidden space-y-6">
+      <div class="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+            <h3 class="font-extrabold text-lg text-slate-900">بایگانی اسناد و مبالغ تسویه‌شده</h3>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            سوابق تمام بدهی‌هایی که تسویه شده‌اند و فیش یا سند واریزی آن‌ها در سیستم ضمیمه شده است.
+          </p>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 px-4 py-2.5 rounded-xl text-left">
+          <p class="text-xs text-emerald-800 font-medium">مجموع وصولی‌های بایگانی‌شده</p>
+          <span id="archive-total-amount" class="text-lg font-black text-emerald-700">۰ تومان</span>
+        </div>
+      </div>
+
+      <!-- Archive Cards List -->
+      <div id="settled-debts-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+      <div id="archive-empty" class="hidden text-center py-16 bg-white rounded-xl border border-dashed border-slate-300">
+        <p class="text-slate-500 font-medium">هنوز هیچ بدهی‌ای تسویه و بایگانی نشده است.</p>
+        <p class="text-xs text-slate-400 mt-1">از تب «وضعیت مالی»، دکمه «تسویه و بارگذاری سند» را برای بدهی‌های پرداختی بزنید.</p>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: FOLLOW-UPS & STALE ==================== -->
+    <section id="pane-followups" class="hidden space-y-6">
+      <!-- Stale Alert -->
+      <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <h3 class="font-bold text-amber-900 text-sm sm:text-base">هشدار تماس برای مشتریان راکد (بیش از ۱۴ روز بدون پیگیری)</h3>
+        </div>
+        <p class="text-xs text-amber-700 mt-1">ارتباط مداوم شانس تبدیل لید را تا ۳ برابر افزایش می‌دهد. سریعاً با موارد زیر تماس بگیرید:</p>
+      </div>
+
+      <div id="stale-customers-list" class="space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: SALES COACH & FUNNEL ==================== -->
+    <section id="pane-coach" class="hidden space-y-6">
+      <!-- Funnel Metrics -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="font-extrabold text-base text-slate-900 mb-4">تحلیل بصری قیف فروش (Funnel Analytics)</h3>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>۱. سرنخ‌های اولیه (Lead Generation)</span>
+              <span id="funnel-leads-pct">۰٪</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div id="funnel-leads-bar" class="h-full bg-indigo-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>۲. در مرحله مذاکره و پرزنت (Negotiation)</span>
+              <span id="funnel-negotiating-pct">۰٪</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div id="funnel-negotiating-bar" class="h-full bg-amber-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>۳. مشتریان قطعی و تسویه‌شده (Deals Won & Settled)</span>
+              <span id="funnel-won-pct">۰٪</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div id="funnel-won-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coach Tips & Objections -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-indigo-50/50 border border-indigo-100 p-5 rounded-xl">
+          <h4 class="font-bold text-indigo-950 text-sm mb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            پاسخ به اعتراض قیمت: «خیلی گرونه!»
+          </h4>
+          <p class="text-xs text-indigo-900/80 leading-relaxed">
+            به جای ارائه فوری تخفیف، بازگشت سرمایه (ROI) را توضیح دهید: «اگر این کمپین تنها ۵ مشتری جدید به سازمان شما اضافه کند، هزینه کل آن در ماه اول جبران خواهد شد.»
+          </p>
+        </div>
+        <div class="bg-emerald-50/50 border border-emerald-100 p-5 rounded-xl">
+          <h4 class="font-bold text-emerald-950 text-sm mb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            تکنیک وصول بدهی بدون تنش
+          </h4>
+          <p class="text-xs text-emerald-900/80 leading-relaxed">
+            قبل از تماس بابت بدهی معوق، همواره صورت‌حساب شفاف و تاریخ تعهد را ارسال کنید: «سلام آقای فلانی، جهت هماهنگی با واحد مالی و بستن فاکتورهای این ماه خدمتتون پیام دادم.»
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Add / Edit Customer Modal -->
+  <div id="modal-customer" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-fade-in">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <h3 id="modal-customer-title" class="font-bold text-slate-800 text-base">ثبت مشتری جدید</h3>
+        <button onclick="closeModal('modal-customer')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="customer-form" onsubmit="handleSaveCustomer(event)" class="p-5 space-y-4">
+        <input type="hidden" id="cust-id" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">نام شرکت یا سازمان *</label>
+            <input type="text" id="cust-company" required placeholder="مثال: شرکت پتروپارس" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">نام شخص مخاطب *</label>
+            <input type="text" id="cust-person" required placeholder="مثال: مهندس رضوانی" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">شماره تماس *</label>
+            <input type="tel" id="cust-phone" required placeholder="۰۹۱۲۳۴۵۶۷۸۹" dir="ltr" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-right" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">سمت سازمانی</label>
+            <input type="text" id="cust-role" placeholder="مثال: مدیر مارکتینگ" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">حوزه فعالیت</label>
+            <input type="text" id="cust-field" placeholder="مثال: فناوری و IT" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">وضعیت ارتباط</label>
+            <select id="cust-status" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="NEW">سرنخ جدید</option>
+              <option value="IN_NEGOTIATION">در حال مذاکره</option>
+              <option value="ACTIVE_DEAL">مشتری قطعی</option>
+              <option value="LOST">انصراف / لغو شده</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">یادداشت / توضیحات اولیه</label>
+          <textarea id="cust-notes" rows="2" placeholder="نکات مهم در مورد مشتری..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+        </div>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-customer')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">انصراف</button>
+          <button type="submit" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm">ذخیره اطلاعات</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Add Debt Modal -->
+  <div id="modal-debt" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-fade-in">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <h3 class="font-bold text-slate-800 text-base">ثبت بدهی جدید برای مشتری</h3>
+        <button onclick="closeModal('modal-debt')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="debt-form" onsubmit="handleSaveDebt(event)" class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">انتخاب مشتری *</label>
+          <select id="debt-customer-select" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">میزان بدهی به تومان *</label>
+          <input type="number" id="debt-amount" required placeholder="مثال: ۱۰۸۰۰۰۰۰۰" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          <p id="debt-amount-words" class="text-xs text-indigo-600 mt-1 font-semibold"></p>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">بابت / کمپین یا قرارداد *</label>
+          <input type="text" id="debt-reason" required placeholder="مثال: کمپین نوروزی اینستاگرام" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">تاریخ فاکتور (شمسی خودکار)</label>
+          <input type="text" id="debt-date" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600" />
+        </div>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-debt')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">انصراف</button>
+          <button type="submit" class="px-5 py-2 text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-lg shadow-sm">ثبت بدهی</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Settlement Modal (تسویه با بارگذاری تصویر سند پرداخت) -->
+  <div id="modal-settle" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden animate-fade-in">
+      <div class="p-5 border-b border-emerald-100 bg-emerald-50/70 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-emerald-950 text-base">تسویه بدهی و انتقال به بایگانی</h3>
+            <p class="text-xs text-emerald-700">ثبت فیش واریزی و سند پرداخت برای بایگانی معتبر</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-settle')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="settle-form" onsubmit="handleConfirmSettlement(event)" class="p-5 space-y-4">
+        <input type="hidden" id="settle-debt-id" />
+
+        <!-- Debt Info Box -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-1">
+          <div class="flex justify-between font-bold">
+            <span class="text-slate-600">نام شرکت:</span>
+            <span id="settle-info-company" class="text-slate-900"></span>
+          </div>
+          <div class="flex justify-between font-bold">
+            <span class="text-slate-600">مبلغ بدهی:</span>
+            <span id="settle-info-amount" class="text-rose-600 font-black text-sm"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-600">بابت:</span>
+            <span id="settle-info-reason" class="text-slate-800"></span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">توضیحات تسویه / کد رهگیری بانکی *</label>
+          <input type="text" id="settle-note" required placeholder="مثال: واریز به حساب پاسارگاد - شماره پیگیری ۷۸۴۵۱۲" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">بارگذاری تصویر سند یا فیش واریز (Voucher / Receipt)</label>
+          <input type="file" id="settle-file-input" accept="image/*" onchange="handleReceiptFileChange(event)" class="block w-full text-xs text-slate-500 file:mr-0 file:ml-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" />
+          <p class="text-xs text-slate-400 mt-1">فرمت‌های تصویری (JPG, PNG) پشتیبانی می‌شوند.</p>
+        </div>
+
+        <!-- Receipt Preview -->
+        <div id="settle-receipt-preview-box" class="hidden border border-slate-200 rounded-xl p-2 bg-slate-50">
+          <p class="text-xs font-bold text-slate-600 mb-1.5">پیش‌نمایش سند پیوست‌شده:</p>
+          <img id="settle-receipt-preview-img" src="" alt="پیش‌نمایش فیش" class="w-full max-h-48 object-contain rounded-lg bg-white border border-slate-200" />
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-settle')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">انصراف</button>
+          <button type="submit" class="px-5 py-2 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm">تایید تسویه و انتقال به بایگانی</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Receipt Fullscreen Image Viewer Modal -->
+  <div id="modal-image-viewer" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-fade-in flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 id="viewer-title" class="font-bold text-slate-900 text-sm sm:text-base">سند پرداخت</h3>
+          <p id="viewer-subtitle" class="text-xs text-slate-500"></p>
+        </div>
+        <button onclick="closeModal('modal-image-viewer')" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-4 flex-1 overflow-auto flex items-center justify-center bg-slate-900">
+        <img id="viewer-img" src="" alt="سند پرداخت" class="max-w-full max-h-[70vh] object-contain rounded" />
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-100 text-right">
+        <button onclick="closeModal('modal-image-viewer')" class="px-4 py-1.5 text-xs font-bold bg-slate-200 text-slate-700 rounded-lg">بستن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Call Log Modal -->
+  <div id="modal-call-log" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-fade-in">
+      <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-slate-800 text-base">ثبت نتیجه تماس</h3>
+          <p id="call-log-company-name" class="text-xs text-indigo-600 font-semibold"></p>
+        </div>
+        <button onclick="closeModal('modal-call-log')" class="text-slate-400 hover:text-slate-600">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="call-log-form" onsubmit="handleSaveCallLog(event)" class="p-5 space-y-4">
+        <input type="hidden" id="call-log-cust-id" />
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">نتیجه تماس *</label>
+          <select id="call-log-outcome" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="AGREED">موافقت و پیشرفت عالی</option>
+            <option value="FOLLOW_UP_NEEDED">نیاز به پیگیری مجدد</option>
+            <option value="PRICE_NEGOTIATION">درخواست تخفیف / مذاکره مالی</option>
+            <option value="BUSY_CALL_LATER">مشغول بود / تماس بعداً</option>
+            <option value="NOT_INTERESTED">عدم تمایل / رد شد</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">خلاصه صحبت‌ها و نکات مذاکره *</label>
+          <textarea id="call-log-summary" required rows="3" placeholder="مشتری در مورد زمان پرداخت چه گفت؟..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+        </div>
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-call-log')" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">انصراف</button>
+          <button type="submit" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm">ثبت تماس با تاریخ امروز</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 left-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white text-xs sm:text-sm font-semibold px-4 py-3 rounded-xl shadow-xl border border-slate-700">
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // --- STORAGE & INITIAL STATE ---
+    const STORAGE_KEY_CUSTOMERS = 'udinit_web_customers';
+    const STORAGE_KEY_DEBTS = 'udinit_web_debts';
+    const STORAGE_KEY_CALL_LOGS = 'udinit_web_call_logs';
+
+    let customers = [];
+    let debts = [];
+    let callLogs = [];
+    let selectedStatusFilter = 'all';
+    let currentReceiptBase64 = null;
+
+    // Helper: Persian Jalali Date Today
+    function getTodayShamsi() {
+      try {
+        const d = new Date();
+        const formatter = new Intl.DateTimeFormat('fa-IR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        return formatter.format(d);
+      } catch (e) {
+        return '۱۴۰۴/۰۱/۰۱';
+      }
+    }
+
+    // Helper: Format Toman Currency with Persian commas
+    function formatToman(amount) {
+      if (!amount || isNaN(amount)) return '۰ تومان';
+      const numStr = Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "٬");
+      return numStr + ' تومان';
+    }
+
+    // Initialize Default Demo Data if empty
+    function initSampleDataIfEmpty() {
+      const savedCust = localStorage.getItem(STORAGE_KEY_CUSTOMERS);
+      const savedDebts = localStorage.getItem(STORAGE_KEY_DEBTS);
+      const savedLogs = localStorage.getItem(STORAGE_KEY_CALL_LOGS);
+
+      if (savedCust) {
+        customers = JSON.parse(savedCust);
+      } else {
+        customers = [
+          {
+            id: 'c1',
+            companyName: 'شرکت پتروپارس نوین',
+            contactPersonName: 'مهندس رضایی',
+            phoneNumber: '09121112233',
+            roleOrTitle: 'مدیر توسعه بازار',
+            businessField: 'صنایع پتروشیمی',
+            status: 'ACTIVE_DEAL',
+            notes: 'قرارداد ۶ ماهه کمپین تبلیغات و لیدجنریشن',
+            createdAt: Date.now() - (5 * 86400000),
+            lastContactTimestamp: Date.now() - (2 * 86400000)
+          },
+          {
+            id: 'c2',
+            companyName: 'گروه صنعتی آذرخش',
+            contactPersonName: 'خانم دکتر احمدی',
+            phoneNumber: '09128889900',
+            roleOrTitle: 'مدیرعامل',
+            businessField: 'مصالح ساختمانی',
+            status: 'IN_NEGOTIATION',
+            notes: 'منتظر تایید بودجه نهایی برای استارت فاز ۲',
+            createdAt: Date.now() - (20 * 86400000),
+            lastContactTimestamp: Date.now() - (18 * 86400000) // Stale (> 14 days)
+          },
+          {
+            id: 'c3',
+            companyName: 'استارتاپ رایان دیتا',
+            contactPersonName: 'مهندس حسینی',
+            phoneNumber: '09351234567',
+            roleOrTitle: 'مدیر فنی',
+            businessField: 'فناوری اطلاعات و هوش مصنوعی',
+            status: 'NEW',
+            notes: 'دریافت شده از نمایشگاه الکامپ',
+            createdAt: Date.now() - (1 * 86400000),
+            lastContactTimestamp: Date.now() - (1 * 86400000)
+          }
+        ];
+        saveCustomers();
+      }
+
+      if (savedDebts) {
+        debts = JSON.parse(savedDebts);
+      } else {
+        debts = [
+          {
+            id: 'd1',
+            customerId: 'c1',
+            customerCompanyName: 'شرکت پتروپارس نوین',
+            amountToman: 108000000,
+            reason: 'بابت اجرای کمپین جامع بازاریابی دیجیتال',
+            persianDateStr: '۱۴۰۴/۰۶/۱۵',
+            createdAt: Date.now() - (3 * 86400000),
+            isSettled: false,
+            settlementNote: null,
+            settledPersianDateStr: null,
+            receiptImageUri: null
+          },
+          {
+            id: 'd2',
+            customerId: 'c2',
+            customerCompanyName: 'گروه صنعتی آذرخش',
+            amountToman: 45000000,
+            reason: 'پیش‌پرداخت قرارداد مشاوره سئو و برندینگ',
+            persianDateStr: '۱۴۰۴/۰۶/۱۰',
+            createdAt: Date.now() - (8 * 86400000),
+            isSettled: false,
+            settlementNote: null,
+            settledPersianDateStr: null,
+            receiptImageUri: null
+          }
+        ];
+        saveDebts();
+      }
+
+      if (savedLogs) {
+        callLogs = JSON.parse(savedLogs);
+      } else {
+        callLogs = [
+          {
+            id: 'l1',
+            customerId: 'c1',
+            timestamp: Date.now() - (2 * 86400000),
+            persianDateStr: '۱۴۰۴/۰۶/۱۷',
+            outcome: 'AGREED',
+            notesSummary: 'هماهنگی برای واریز قسط اول کمپین انجام شد.'
+          }
+        ];
+        saveCallLogs();
+      }
+    }
+
+    function saveCustomers() {
+      localStorage.setItem(STORAGE_KEY_CUSTOMERS, JSON.stringify(customers));
+    }
+    function saveDebts() {
+      localStorage.setItem(STORAGE_KEY_DEBTS, JSON.stringify(debts));
+    }
+    function saveCallLogs() {
+      localStorage.setItem(STORAGE_KEY_CALL_LOGS, JSON.stringify(callLogs));
+    }
+
+    // Show Toast
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    // TAB SWITCHING
+    function switchTab(tabId) {
+      const tabs = ['customers', 'financial', 'archive', 'followups', 'coach'];
+      tabs.forEach(t => {
+        const pane = document.getElementById('pane-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tabId) {
+          pane.classList.remove('hidden');
+          btn.className = 'tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 border-indigo-600 text-indigo-600 whitespace-nowrap';
+        } else {
+          pane.classList.add('hidden');
+          btn.className = 'tab-btn flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent whitespace-nowrap';
+        }
+      });
+
+      if (tabId === 'customers') renderCustomers();
+      if (tabId === 'financial') renderDebts();
+      if (tabId === 'archive') renderSettledArchive();
+      if (tabId === 'followups') renderStaleCustomers();
+      if (tabId === 'coach') renderFunnel();
+      updateBadges();
+    }
+
+    // BADGES & STATS
+    function updateBadges() {
+      document.getElementById('badge-customers-count').textContent = customers.length;
+      
+      const activeDebts = debts.filter(d => !d.isSettled);
+      const totalActiveDebt = activeDebts.reduce((sum, d) => sum + Number(d.amountToman), 0);
+      document.getElementById('badge-debt-amount').textContent = activeDebts.length;
+
+      const settledDebts = debts.filter(d => d.isSettled);
+      document.getElementById('badge-settled-count').textContent = settledDebts.length;
+
+      const fourteenDaysAgo = Date.now() - (14 * 86400000);
+      const staleCount = customers.filter(c => (c.lastContactTimestamp || c.createdAt) < fourteenDaysAgo).length;
+      document.getElementById('badge-stale-count').textContent = staleCount;
+
+      // Stats on Financial Screen
+      const totalGrandDebt = debts.reduce((sum, d) => sum + Number(d.amountToman), 0);
+      const totalSettledDebt = settledDebts.reduce((sum, d) => sum + Number(d.amountToman), 0);
+
+      document.getElementById('stat-total-debt').textContent = formatToman(totalGrandDebt);
+      document.getElementById('stat-active-debt').textContent = formatToman(totalActiveDebt);
+      document.getElementById('stat-settled-debt').textContent = formatToman(totalSettledDebt);
+      document.getElementById('archive-total-amount').textContent = formatToman(totalSettledDebt);
+    }
+
+    // --- RENDER CUSTOMERS ---
+    function filterCustomerStatus(status) {
+      selectedStatusFilter = status;
+      document.querySelectorAll('.filter-status-btn').forEach(btn => {
+        if (btn.getAttribute('data-status') === status) {
+          btn.className = 'filter-status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white';
+        } else {
+          btn.className = 'filter-status-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200';
+        }
+      });
+      renderCustomers();
+    }
+
+    function renderCustomers() {
+      const q = (document.getElementById('customer-search-input').value || '').trim().toLowerCase();
+      const grid = document.getElementById('customers-grid');
+      const empty = document.getElementById('customers-empty');
+
+      const filtered = customers.filter(c => {
+        const matchQ = !q || c.companyName.toLowerCase().includes(q) || c.contactPersonName.toLowerCase().includes(q) || (c.businessField && c.businessField.toLowerCase().includes(q));
+        const matchStatus = selectedStatusFilter === 'all' || c.status === selectedStatusFilter;
+        return matchQ && matchStatus;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      grid.innerHTML = filtered.map(c => {
+        const isStale = (c.lastContactTimestamp || c.createdAt) < (Date.now() - (14 * 86400000));
+        
+        let statusBadge = '';
+        if (c.status === 'NEW') statusBadge = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">سرنخ جدید</span>';
+        else if (c.status === 'IN_NEGOTIATION') statusBadge = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">در حال مذاکره</span>';
+        else if (c.status === 'ACTIVE_DEAL') statusBadge = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">مشتری قطعی</span>';
+        else statusBadge = '<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">راکد / انصراف</span>';
+
+        // Calculate customer's active debt
+        const customerDebts = debts.filter(d => d.customerId === c.id && !d.isSettled);
+        const debtSum = customerDebts.reduce((sum, d) => sum + Number(d.amountToman), 0);
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h4 class="font-extrabold text-slate-900 text-base">${c.companyName}</h4>
+                  <p class="text-xs text-slate-500 font-medium mt-0.5">${c.contactPersonName} ${c.roleOrTitle ? '• ' + c.roleOrTitle : ''}</p>
+                </div>
+                ${statusBadge}
+              </div>
+
+              <div class="mt-4 space-y-1.5 text-xs text-slate-600">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                  <span dir="ltr" class="font-semibold text-slate-800">${c.phoneNumber}</span>
+                </div>
+                ${c.businessField ? `
+                  <div class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span>${c.businessField}</span>
+                  </div>` : ''}
+              </div>
+
+              ${debtSum > 0 ? `
+                <div class="mt-3 px-3 py-2 bg-rose-50 border border-rose-100 rounded-xl flex items-center justify-between text-xs">
+                  <span class="text-rose-700 font-bold">مانده بدهی جاری:</span>
+                  <span class="text-rose-800 font-black">${formatToman(debtSum)}</span>
+                </div>
+              ` : ''}
+
+              ${isStale ? `
+                <div class="mt-2 px-2.5 py-1 bg-amber-50 text-amber-800 text-[11px] font-bold rounded-lg border border-amber-200 flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/></svg>
+                  هشدار: بیش از ۲ هفته تماسی ثبت نشده!
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between gap-1">
+              <div class="flex items-center gap-1">
+                <button onclick="openCallLogModal('${c.id}')" title="ثبت تماس" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                  تماس
+                </button>
+                <button onclick="openAddDebtForCustomer('${c.id}')" title="ثبت بدهی" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg transition">
+                  + بدهی
+                </button>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="editCustomer('${c.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button onclick="deleteCustomer('${c.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- RENDER ACTIVE DEBTS ---
+    function renderDebts() {
+      const list = document.getElementById('active-debts-list');
+      const empty = document.getElementById('debts-empty');
+      const activeDebts = debts.filter(d => !d.isSettled);
+
+      if (activeDebts.length === 0) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      list.innerHTML = activeDebts.map(d => {
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm hover:border-slate-300 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <h4 class="font-extrabold text-slate-900 text-base">${d.customerCompanyName}</h4>
+              </div>
+              <p class="text-xs text-slate-600 font-medium">بابت: <span class="text-slate-800">${d.reason}</span></p>
+              <div class="flex items-center gap-3 text-xs text-slate-400">
+                <span>تاریخ فاکتور: ${d.persianDateStr || '—'}</span>
+                <span>•</span>
+                <span class="text-rose-600 font-semibold">در انتظار پرداخت</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+              <div class="text-right">
+                <p class="text-xs text-slate-400">مبلغ قابل پرداخت</p>
+                <p class="text-lg sm:text-xl font-black text-rose-600">${formatToman(d.amountToman)}</p>
+              </div>
+
+              <!-- Dedicated Settlement Action Button with Receipt Voucher Upload -->
+              <button onclick="openSettlementModal('${d.id}')" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-md shadow-emerald-200 hover:shadow-lg transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                تسویه و بارگذاری سند
+              </button>
+
+              <button onclick="deleteDebt('${d.id}')" title="حذف" class="p-2 text-slate-300 hover:text-rose-600 rounded-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- RENDER SETTLED ARCHIVE ---
+    function renderSettledArchive() {
+      const list = document.getElementById('settled-debts-list');
+      const empty = document.getElementById('archive-empty');
+      const settled = debts.filter(d => d.isSettled);
+
+      if (settled.length === 0) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      list.innerHTML = settled.map(d => {
+        return `
+          <div class="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-start justify-between">
+                <div>
+                  <h4 class="font-extrabold text-slate-900 text-base">${d.customerCompanyName}</h4>
+                  <p class="text-xs text-slate-500 mt-0.5">بابت: ${d.reason}</p>
+                </div>
+                <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  تسویه‌شده
+                </span>
+              </div>
+
+              <div class="mt-3 p-3 bg-slate-50 rounded-xl space-y-1.5 text-xs text-slate-600 border border-slate-100">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">مبلغ تسویه:</span>
+                  <span class="font-black text-emerald-700 text-sm">${formatToman(d.amountToman)}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">تاریخ تسویه:</span>
+                  <span class="font-semibold text-slate-800">${d.settledPersianDateStr || '—'}</span>
+                </div>
+                ${d.settlementNote ? `
+                  <div class="pt-1 border-t border-slate-200 text-slate-700">
+                    <span class="font-semibold">توضیح/رهگیری:</span> ${d.settlementNote}
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Receipt Proof Preview Box -->
+              ${d.receiptImageUri ? `
+                <div class="mt-3 border border-emerald-200 bg-emerald-50/50 p-2.5 rounded-xl flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <img src="${d.receiptImageUri}" class="w-12 h-12 object-cover rounded-lg border border-emerald-200 bg-white" />
+                    <div>
+                      <p class="text-xs font-bold text-emerald-950">سند پرداخت پیوست شده</p>
+                      <p class="text-[10px] text-emerald-700">تصویر فیش بانکی معتبر</p>
+                    </div>
+                  </div>
+                  <button onclick="viewReceiptImage('${d.id}')" class="px-3 py-1.5 bg-white hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 rounded-lg shadow-sm transition">
+                    مشاهده سند
+                  </button>
+                </div>
+              ` : `
+                <div class="mt-3 p-2 text-center text-xs text-slate-400 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                  بدون تصویر پیوست
+                </div>
+              `}
+            </div>
+
+            <!-- Actions -->
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+              <button onclick="revertSettlement('${d.id}')" class="text-xs font-semibold text-slate-500 hover:text-amber-700">
+                ↩ بازگشت به بدهی جاری
+              </button>
+              <button onclick="deleteDebt('${d.id}')" class="text-xs font-semibold text-rose-500 hover:text-rose-700">
+                حذف رکورد
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- RENDER STALE CUSTOMERS ---
+    function renderStaleCustomers() {
+      const list = document.getElementById('stale-customers-list');
+      const fourteenDaysAgo = Date.now() - (14 * 86400000);
+      const stale = customers.filter(c => (c.lastContactTimestamp || c.createdAt) < fourteenDaysAgo);
+
+      if (stale.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
+            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <p class="font-bold text-slate-800 text-sm">هیچ مشتری راکدی ندارید!</p>
+            <p class="text-xs text-slate-400 mt-0.5">با همه مشتریان طی ۱۴ روز گذشته ارتباط برقرار شده است.</p>
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = stale.map(c => {
+        const days = Math.floor((Date.now() - (c.lastContactTimestamp || c.createdAt)) / 86400000);
+        return `
+          <div class="bg-white rounded-xl border border-amber-200 p-4 flex items-center justify-between">
+            <div>
+              <h4 class="font-bold text-slate-900 text-sm">${c.companyName} (${c.contactPersonName})</h4>
+              <p class="text-xs text-amber-700 mt-0.5">مدت زمان عدم تماس: <b>${days} روز پیش</b></p>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="tel:${c.phoneNumber}" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg">تماس مستقیم</a>
+              <button onclick="openCallLogModal('${c.id}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg">ثبت نتیجه</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- RENDER FUNNEL ---
+    function renderFunnel() {
+      const total = customers.length || 1;
+      const leads = customers.filter(c => c.status === 'NEW').length;
+      const negotiating = customers.filter(c => c.status === 'IN_NEGOTIATION').length;
+      const won = customers.filter(c => c.status === 'ACTIVE_DEAL').length;
+
+      const pLeads = Math.round((leads / total) * 100);
+      const pNeg = Math.round((negotiating / total) * 100);
+      const pWon = Math.round((won / total) * 100);
+
+      document.getElementById('funnel-leads-pct').textContent = `${leads} مورد (${pLeads}٪)`;
+      document.getElementById('funnel-leads-bar').style.width = pLeads + '%';
+
+      document.getElementById('funnel-negotiating-pct').textContent = `${negotiating} مورد (${pNeg}٪)`;
+      document.getElementById('funnel-negotiating-bar').style.width = pNeg + '%';
+
+      document.getElementById('funnel-won-pct').textContent = `${won} مورد (${pWon}٪)`;
+      document.getElementById('funnel-won-bar').style.width = pWon + '%';
+    }
+
+    // --- MODAL UTILS ---
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // --- ADD / EDIT CUSTOMER ---
+    function openAddCustomerModal() {
+      document.getElementById('modal-customer-title').textContent = 'ثبت مشتری جدید';
+      document.getElementById('cust-id').value = '';
+      document.getElementById('cust-company').value = '';
+      document.getElementById('cust-person').value = '';
+      document.getElementById('cust-phone').value = '';
+      document.getElementById('cust-role').value = '';
+      document.getElementById('cust-field').value = '';
+      document.getElementById('cust-status').value = 'NEW';
+      document.getElementById('cust-notes').value = '';
+      openModal('modal-customer');
+    }
+
+    function editCustomer(id) {
+      const c = customers.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('modal-customer-title').textContent = 'ویرایش اطلاعات مشتری';
+      document.getElementById('cust-id').value = c.id;
+      document.getElementById('cust-company').value = c.companyName;
+      document.getElementById('cust-person').value = c.contactPersonName;
+      document.getElementById('cust-phone').value = c.phoneNumber;
+      document.getElementById('cust-role').value = c.roleOrTitle || '';
+      document.getElementById('cust-field').value = c.businessField || '';
+      document.getElementById('cust-status').value = c.status;
+      document.getElementById('cust-notes').value = c.notes || '';
+      openModal('modal-customer');
+    }
+
+    function handleSaveCustomer(e) {
+      e.preventDefault();
+      const id = document.getElementById('cust-id').value;
+      const company = document.getElementById('cust-company').value.trim();
+      const person = document.getElementById('cust-person').value.trim();
+      const phone = document.getElementById('cust-phone').value.trim();
+      const role = document.getElementById('cust-role').value.trim();
+      const field = document.getElementById('cust-field').value.trim();
+      const status = document.getElementById('cust-status').value;
+      const notes = document.getElementById('cust-notes').value.trim();
+
+      if (id) {
+        const idx = customers.findIndex(c => c.id === id);
+        if (idx >= 0) {
+          customers[idx] = {
+            ...customers[idx],
+            companyName: company,
+            contactPersonName: person,
+            phoneNumber: phone,
+            roleOrTitle: role,
+            businessField: field,
+            status: status,
+            notes: notes
+          };
+          showToast('اطلاعات مشتری به‌روزرسانی شد');
+        }
+      } else {
+        const newCust = {
+          id: 'c_' + Date.now(),
+          companyName: company,
+          contactPersonName: person,
+          phoneNumber: phone,
+          roleOrTitle: role,
+          businessField: field,
+          status: status,
+          notes: notes,
+          createdAt: Date.now(),
+          lastContactTimestamp: Date.now()
+        };
+        customers.unshift(newCust);
+        showToast('مشتری جدید با موفقیت اضافه شد');
+      }
+
+      saveCustomers();
+      closeModal('modal-customer');
+      renderCustomers();
+      updateBadges();
+    }
+
+    function deleteCustomer(id) {
+      if (!confirm('آیا از حذف این مشتری اطمینان دارید؟')) return;
+      customers = customers.filter(c => c.id !== id);
+      saveCustomers();
+      showToast('مشتری حذف شد');
+      renderCustomers();
+      updateBadges();
+    }
+
+    // --- ADD DEBT ---
+    function openAddDebtModal(preselectedCustomerId = null) {
+      const select = document.getElementById('debt-customer-select');
+      select.innerHTML = customers.map(c => `
+        <option value="${c.id}" ${c.id === preselectedCustomerId ? 'selected' : ''}>${c.companyName} (${c.contactPersonName})</option>
+      `).join('');
+
+      document.getElementById('debt-amount').value = '';
+      document.getElementById('debt-amount-words').textContent = '';
+      document.getElementById('debt-reason').value = '';
+      document.getElementById('debt-date').value = getTodayShamsi();
+      openModal('modal-debt');
+    }
+
+    function openAddDebtForCustomer(cid) {
+      openAddDebtModal(cid);
+    }
+
+    document.getElementById('debt-amount').addEventListener('input', function(e) {
+      const val = Number(e.target.value);
+      if (val > 0) {
+        document.getElementById('debt-amount-words').textContent = formatToman(val);
+      } else {
+        document.getElementById('debt-amount-words').textContent = '';
+      }
+    });
+
+    function handleSaveDebt(e) {
+      e.preventDefault();
+      const customerId = document.getElementById('debt-customer-select').value;
+      const cust = customers.find(c => c.id === customerId);
+      if (!cust) return;
+
+      const amount = Number(document.getElementById('debt-amount').value);
+      const reason = document.getElementById('debt-reason').value.trim();
+      const pDate = document.getElementById('debt-date').value.trim();
+
+      const newDebt = {
+        id: 'd_' + Date.now(),
+        customerId: customerId,
+        customerCompanyName: cust.companyName,
+        amountToman: amount,
+        reason: reason,
+        persianDateStr: pDate,
+        createdAt: Date.now(),
+        isSettled: false,
+        settlementNote: null,
+        settledPersianDateStr: null,
+        receiptImageUri: null
+      };
+
+      debts.unshift(newDebt);
+      saveDebts();
+      closeModal('modal-debt');
+      showToast('بدهی جدید ثبت گردید');
+      renderDebts();
+      renderCustomers();
+      updateBadges();
+    }
+
+    function deleteDebt(id) {
+      if (!confirm('آیا از حذف این بدهی اطمینان دارید؟')) return;
+      debts = debts.filter(d => d.id !== id);
+      saveDebts();
+      showToast('بدهی حذف شد');
+      renderDebts();
+      renderSettledArchive();
+      renderCustomers();
+      updateBadges();
+    }
+
+    // --- SETTLEMENT FLOW (تسویه و بارگذاری سند) ---
+    function openSettlementModal(debtId) {
+      const d = debts.find(x => x.id === debtId);
+      if (!d) return;
+
+      document.getElementById('settle-debt-id').value = d.id;
+      document.getElementById('settle-info-company').textContent = d.customerCompanyName;
+      document.getElementById('settle-info-amount').textContent = formatToman(d.amountToman);
+      document.getElementById('settle-info-reason').textContent = d.reason;
+      document.getElementById('settle-note').value = '';
+      document.getElementById('settle-file-input').value = '';
+      document.getElementById('settle-receipt-preview-box').classList.add('hidden');
+      currentReceiptBase64 = null;
+
+      openModal('modal-settle');
+    }
+
+    function handleReceiptFileChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentReceiptBase64 = evt.target.result;
+        const img = document.getElementById('settle-receipt-preview-img');
+        img.src = currentReceiptBase64;
+        document.getElementById('settle-receipt-preview-box').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleConfirmSettlement(e) {
+      e.preventDefault();
+      const debtId = document.getElementById('settle-debt-id').value;
+      const note = document.getElementById('settle-note').value.trim();
+
+      const idx = debts.findIndex(d => d.id === debtId);
+      if (idx >= 0) {
+        debts[idx].isSettled = true;
+        debts[idx].settlementNote = note;
+        debts[idx].settledPersianDateStr = getTodayShamsi();
+        debts[idx].receiptImageUri = currentReceiptBase64;
+        saveDebts();
+        showToast('بدهی تسویه و به بایگانی تسویه‌ها منتقل شد');
+      }
+
+      closeModal('modal-settle');
+      renderDebts();
+      renderSettledArchive();
+      renderCustomers();
+      updateBadges();
+    }
+
+    function revertSettlement(debtId) {
+      if (!confirm('آیا می‌خواهید این تسویه لغو و به بدهی‌های جاری بازگردد؟')) return;
+      const idx = debts.findIndex(d => d.id === debtId);
+      if (idx >= 0) {
+        debts[idx].isSettled = false;
+        saveDebts();
+        showToast('بدهی مجدداً فعال شد');
+        renderDebts();
+        renderSettledArchive();
+        renderCustomers();
+        updateBadges();
+      }
+    }
+
+    function viewReceiptImage(debtId) {
+      const d = debts.find(x => x.id === debtId);
+      if (!d || !d.receiptImageUri) return;
+
+      document.getElementById('viewer-title').textContent = `سند پرداخت - ${d.customerCompanyName}`;
+      document.getElementById('viewer-subtitle').textContent = `مبلغ: ${formatToman(d.amountToman)} • تاریخ تسویه: ${d.settledPersianDateStr || '—'}`;
+      document.getElementById('viewer-img').src = d.receiptImageUri;
+      openModal('modal-image-viewer');
+    }
+
+    // --- CALL LOG ---
+    function openCallLogModal(cid) {
+      const c = customers.find(x => x.id === cid);
+      if (!c) return;
+
+      document.getElementById('call-log-cust-id').value = c.id;
+      document.getElementById('call-log-company-name').textContent = `${c.companyName} (${c.contactPersonName})`;
+      document.getElementById('call-log-summary').value = '';
+      openModal('modal-call-log');
+    }
+
+    function handleSaveCallLog(e) {
+      e.preventDefault();
+      const cid = document.getElementById('call-log-cust-id').value;
+      const outcome = document.getElementById('call-log-outcome').value;
+      const summary = document.getElementById('call-log-summary').value.trim();
+
+      const newLog = {
+        id: 'l_' + Date.now(),
+        customerId: cid,
+        timestamp: Date.now(),
+        persianDateStr: getTodayShamsi(),
+        outcome: outcome,
+        notesSummary: summary
+      };
+
+      callLogs.unshift(newLog);
+      saveCallLogs();
+
+      // Update customer last contacted timestamp
+      const cIdx = customers.findIndex(c => c.id === cid);
+      if (cIdx >= 0) {
+        customers[cIdx].lastContactTimestamp = Date.now();
+        saveCustomers();
+      }
+
+      closeModal('modal-call-log');
+      showToast('نتیجه تماس با تاریخ امروز ثبت گردید');
+      renderCustomers();
+      renderStaleCustomers();
+      updateBadges();
+    }
+
+    // --- EXPORT & IMPORT BACKUP ---
+    function exportData() {
+      const payload = {
+        app: 'udinit',
+        version: '1.0.0',
+        exportedAt: new Date().toISOString(),
+        customers,
+        debts,
+        callLogs
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `udinit-backup-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('فایل پشتیبان دانلود شد');
+    }
+
+    // START ON LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      initSampleDataIfEmpty();
+      renderCustomers();
+      updateBadges();
+    });
+  </script>
+</body>
+</html>
